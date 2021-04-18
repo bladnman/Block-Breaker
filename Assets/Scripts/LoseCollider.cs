@@ -4,10 +4,5 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoseCollider : MonoBehaviour {
-  private void OnTriggerEnter2D(Collider2D other) {
-    LoadGameOverScene();
-  }
-  void LoadGameOverScene() {
-    SceneManager.LoadScene("Game Over");
-  }
+  // see Ball.cs for ball collisions
 }

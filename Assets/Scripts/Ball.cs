@@ -4,25 +4,31 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Ball : MonoBehaviour {
-  [SerializeField] Paddle paddle1;
   [SerializeField] bool isLockedToPaddle = true;
   [SerializeField] Vector2 launchVelocity = new Vector2(6f, 15f);
   [SerializeField] AudioSource paddleSound;
   [SerializeField] AudioSource blockSound;
 
+  Paddle paddle1;
   Vector2 paddleToBallVector;
+  Level level;
+  bool isAlive = true;
 
   void Start() {
-    paddleToBallVector = transform.position - paddle1.transform.position;
-  }
+    paddle1 = FindObjectOfType<Paddle>();
+    level = FindObjectOfType<Level>();
 
-  // Update is called once per frame
+    var paddleSize = paddle1.GetComponent<Renderer>().bounds.size;
+    paddleToBallVector = new Vector2(0, (paddle1.transform.position.y + (paddleSize.y / 3)));
+  }
   void Update() {
     LockBallToPaddle();
     LaunchOnMouseClick();
   }
 
   private void LaunchOnMouseClick() {
+    if (!isLockedToPaddle) return;
+
     if (Input.GetMouseButtonDown(0)) {
       isLockedToPaddle = false;
       var rb = GetComponent<Rigidbody2D>();
@@ -30,7 +36,6 @@ public class Ball : MonoBehaviour {
       // rb.AddForce(new Vector2(2, 3));
     }
   }
-
   private void LockBallToPaddle() {
     if (false == isLockedToPaddle) return;
     var paddlePos = new Vector2(paddle1.transform.position.x, paddle1.transform.position.y);
@@ -39,10 +44,27 @@ public class Ball : MonoBehaviour {
   private void OnCollisionEnter2D(Collision2D other) {
     if (true == isLockedToPaddle) return;
 
-    if (other.gameObject.name == "Paddle") {
+    // slow to search, maybe use tag?
+    // PADDLE HIT
+    if (other.gameObject.GetComponent<Paddle>() != null) {
       paddleSound.Play();
-    } else if (other.gameObject.name.Contains("Block")) {
+    }
+
+    // BLOCK HIT
+    else if (other.gameObject.GetComponent<Block>() != null) {
       blockSound.Play();
     }
+  }
+  private void OnTriggerEnter2D(Collider2D other) {
+    var loseCollider = other.gameObject.GetComponent<LoseCollider>();
+    if (loseCollider != null) {
+      Destroy();
+    }
+  }
+  public void Destroy() {
+    if (!isAlive) return;
+    level.DestroyBall();
+    isAlive = false;
+    Destroy(gameObject);
   }
 }

@@ -8,12 +8,12 @@ public class Block : MonoBehaviour {
   [SerializeField] int health = 1;
   [SerializeField] bool isBreakable = true;
 
-  GameState gameState;
+  Level level;
   bool isAlive = true;
 
   private void Start() {
-    gameState = FindObjectOfType<GameState>();
-    gameState.AddBlock();
+    level = FindObjectOfType<Level>();
+    level.AddBlock();
   }
 
   private void OnCollisionEnter2D(Collision2D other) {
@@ -27,6 +27,7 @@ public class Block : MonoBehaviour {
   void DestroyBlock() {
     isAlive = false;
     Destroy(gameObject);
-    gameState.DestroyBlock();
+
+    level.DestroyBlock();
   }
 }
