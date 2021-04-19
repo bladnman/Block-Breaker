@@ -7,6 +7,8 @@ public class GameState : MonoBehaviour {
   [SerializeField] [Range(0.1f, 10.0f)] float gameSpeed = 1f;
   [SerializeField] int pointsPerBlock = 37;
   [SerializeField] int startingLives = 3;
+  [SerializeField] bool autoplay = false;
+  public bool Autoplay { get { return autoplay; } }
 
   // STATE
   int score = 0;

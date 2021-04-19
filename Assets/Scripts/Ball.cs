@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Ball : MonoBehaviour {
@@ -8,15 +5,18 @@ public class Ball : MonoBehaviour {
   [SerializeField] Vector2 launchVelocity = new Vector2(6f, 15f);
   [SerializeField] AudioSource paddleSound;
   [SerializeField] AudioSource blockSound;
+  [SerializeField] float randomFactor = 2f;
 
   Paddle paddle1;
   Vector2 paddleToBallVector;
+  Rigidbody2D rb;
   Level level;
   bool isAlive = true;
 
   void Start() {
     paddle1 = FindObjectOfType<Paddle>();
     level = FindObjectOfType<Level>();
+    rb = GetComponent<Rigidbody2D>();
 
     var paddleSize = paddle1.GetComponent<Renderer>().bounds.size;
     paddleToBallVector = new Vector2(0, (paddle1.transform.position.y + (paddleSize.y / 3)));
@@ -54,6 +54,16 @@ public class Ball : MonoBehaviour {
     else if (other.gameObject.GetComponent<Block>() != null) {
       blockSound.Play();
     }
+
+    AddRandomVelocity();
+  }
+  void AddRandomVelocity() {
+    Vector2 randVector = new Vector2(Random.Range(0, randomFactor), Random.Range(0, randomFactor));
+    // float xTweak = rb.velocity.x > 0 ? randVector.x : randVector.x * -1;
+    // float yTweak = rb.velocity.y > 0 ? randVector.y : randVector.y * -1;
+    // Vector2 finalTweak = new Vector2(xTweak, yTweak);
+    // rb.velocity += finalTweak;
+    rb.velocity += randVector;
   }
   private void OnTriggerEnter2D(Collider2D other) {
     var loseCollider = other.gameObject.GetComponent<LoseCollider>();
